@@ -1,8 +1,11 @@
 import './App.css'
-import responseMovies from './mocks/with-results.json'
-import noResults from './mocks/no-results.json'
+import { Movies } from './components/Movies'
+import { useMovies } from './hooks/useMovies'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import { useRef } from 'react'
+
+
 
 
 export default function App() {
@@ -23,47 +26,31 @@ export default function App() {
   //   fetchMovies()
   // }, [])
 
-  const movies = responseMovies.Search
-  const hasMovies = movies?.length > 0 //opcional
+  const { movies } = useMovies()
+  const inputRef = useRef()
 
-  const renderMovies = () => {
-    return (
-      <ul>
-        {
-          movies.map(movie => (
-            <li key={movie.imdbID}>
-              <h3>{movie.Title}</h3>
-              <p>{movie.Year}</p>
-              <img src={movie.Poster} alt={movie.Title}></img>
-            </li>
-          ))
-        }
-      </ul>
-    )
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const inputEl = inputRef.current //current es una propiedad nativa de JS que permite obtener el valor actual del objeto
+    const value = inputEl.value //El value de ese objeto es lo que utilizaremos
+    console.log(value)
   }
 
-  const noRenderMovies = () => {
-    return (
-      <p>No se encontraron películas para esta búsqueda</p>
-    )
-  }
 
   return (
     <div className='page'>
       <header>
         <h1>Buscador de Películas</h1>
         <div>
-          <form className='form'>
-            <input placeholder='Pelicula a buscar...' /> {/* Por defecto es text */}
+          <form className='form' onSubmit={handleSubmit}>
+            <input ref={inputRef} placeholder='Pelicula a buscar...' /> {/* Por defecto es text */}
             <button type='submit'>Buscar</button>
           </form>
         </div>
       </header>
 
       <main>
-        {
-          hasMovies ? renderMovies() : noRenderMovies()
-        }
+        <Movies movies={movies} />
       </main>
     </div>
   )
