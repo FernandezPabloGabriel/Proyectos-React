@@ -1,7 +1,9 @@
-import responseMovies from '../mocks/with-results.json'
-import noResponseMovies from '../mocks/no-results.json'
+import withMovies from '../mocks/with-results.json'
+import noMovies from '../mocks/no-results.json'
+import { useState } from 'react'
 
-export function useMovies() {
+export function useMovies({ search }) {
+  const [responseMovies, setResponseMovies] = useState([]);
   const movies = responseMovies.Search
 
   const mappedMovies = movies?.map(movie => ({
@@ -11,5 +13,13 @@ export function useMovies() {
     poster: movie.Poster
   }))
 
-  return { movies: mappedMovies }
+  const getMovies = () => {
+    if (search) {
+      setResponseMovies(withMovies)
+    } else {
+      setResponseMovies(noMovies)
+    }
+  }
+
+  return { movies: mappedMovies, getMovies } //Devuelvo getMovies para llamar la función cuando se requiera
 } //Exporta el mapeo de atributos de objetos pertenecientes al json de la pelicula buscada

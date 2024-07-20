@@ -5,8 +5,38 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { useRef } from 'react'
 
+function useSearch() {
+  const [search, updateSearch] = useState('')
+  const [error, setErrors] = useState(null)
+  const isFirstInput = useRef(true)
 
+  useEffect(() => {
+    if (isFirstInput.current) {
+      isFirstInput.current = search === ''
 
+      return
+    }
+
+    if (search === '') {
+      setErrors('No se puede buscar una película vacía')
+      return
+    }
+
+    if (search.match(/^\d+$/)) {
+      setErrors('No se puede buscar una película con un número')
+      return
+    }
+
+    if (search.length < 3) {
+      setErrors('La búsqueda debe tener al menos 3 carácteres')
+      return
+    }
+
+    setErrors(null)
+  }, [search])
+
+  return { error, search, updateSearch }
+}
 
 export default function App() {
 
@@ -26,16 +56,29 @@ export default function App() {
   //   fetchMovies()
   // }, [])
 
-  const { movies } = useMovies()
-  const inputRef = useRef()
 
+  // RECORDAR => Los estados son asíncronos
+
+  const { error, search, updateSearch } = useSearch()
+  const { movies, getMovies } = useMovies({ search })
+
+  //const inputRef = useRef()
+
+  //Utilizando vanilla JS, permite muuucha reutilización, como la posibilidad de usar 10 inputs
   const handleSubmit = (event) => {
     event.preventDefault()
-    const inputEl = inputRef.current //current es una propiedad nativa de JS que permite obtener el valor actual del objeto
-    const value = inputEl.value //El value de ese objeto es lo que utilizaremos
-    console.log(value)
+    //const { search } = Object.fromEntries(new window.FormData(event.target)) //De esta manera recolectamos 
+    //const { search } = fields.get('search')
+    getMovies()
   }
 
+  //Esta función se encarga de manejar el estado del formulario cada vez que cambia el input
+  const handleChange = (event) => {
+    const newSearch = event.target.value
+    if (newSearch !== ' ') {
+      updateSearch(event.target.value)
+    }
+  }
 
   return (
     <div className='page'>
@@ -43,9 +86,16 @@ export default function App() {
         <h1>Buscador de Películas</h1>
         <div>
           <form className='form' onSubmit={handleSubmit}>
-            <input ref={inputRef} placeholder='Pelicula a buscar...' /> {/* Por defecto es text */}
+            <input style={{
+              border: '1px solid transparent',
+              borderColor: error ? 'red' : 'transparent'
+            }} onChange={handleChange}
+              value={search}
+              name='search'
+              placeholder='Pelicula a buscar...' /> {/* Por defecto es text ||| value={search} */}
             <button type='submit'>Buscar</button>
           </form>
+          {error && <p className='error'>{error}</p>}
         </div>
       </header>
 
