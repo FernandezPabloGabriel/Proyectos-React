@@ -1,29 +1,27 @@
-import withMovies from '../mocks/with-results.json'
+//import withMovies from '../mocks/with-results.json'
 import noMovies from '../mocks/no-results.json'
+import searchMovies from '../services/movies'
+//import movies 
 import { useState } from 'react'
 
 export function useMovies({ search }) {
-  const [responseMovies, setResponseMovies] = useState([]);
-  const movies = responseMovies.Search
-
-  const mappedMovies = movies?.map(movie => ({
-    id: movie.imdbID,
-    title: movie.Title,
-    year: movie.Year,
-    poster: movie.Poster
-  }))
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   //De esta manera, seteamos el estado según el valor del search
-  const getMovies = () => {
-    if (search) { //Si hay valor no nulo...
-      //setResponseMovies(withMovies)
-      fetch(`https://www.omdbapi.com/?apikey=4287ad07&s=${search}`)
-        .then(res => res.json())
-        .then(json => setResponseMovies(json))
-    } else {
-      setResponseMovies(noMovies)
+  const getMovies = async () => { // Si la función que llama es asíncrona, entonces esta también debe serlo
+    try {
+      setLoading(true)
+      setError(null)
+      const responseMovies = await searchMovies({ search })
+      setMovies(responseMovies)
+    } catch (error) {
+      setError(error.message)
+    } finally { //Se ejecuta tanto en el try como en el catch, entonces siempre que termine de ejecutarse el cuerpo de uno de estos el loading se setea en false
+      setLoading(false)
     }
   }
 
-  return { movies: mappedMovies, getMovies } //Devuelvo getMovies para llamar la función cuando se requiera
+  return { movies, getMovies, loading } //Devuelvo getMovies para llamar la función cuando se requiera
 } //Exporta el mapeo de atributos de objetos pertenecientes al json de la pelicula buscada
