@@ -39,26 +39,6 @@ function useSearch() {
 }
 
 export default function App() {
-
-  // const [hasMovies, setHasMovies] = useState
-  // const [movies, setMovies] = useState
-
-  // async function fetchMovies() {
-  //   const moviesA = await responseMovies('avengers')
-  //   const hasMoviesA = movies?.length > 0 //opcional
-  //   console.log(movies.length)
-  //   console.log(movies)
-  //   setHasMovies(hasMoviesA)
-  //   setMovies(moviesA)
-  // }
-
-  // useEffect(() => {
-  //   fetchMovies()
-  // }, [])
-
-
-  // RECORDAR => Los estados son asíncronos
-
   const { error, search, updateSearch } = useSearch()
   const { movies, getMovies } = useMovies({ search })
 
