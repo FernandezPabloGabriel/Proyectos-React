@@ -13,7 +13,6 @@ function useSearch() {
   useEffect(() => {
     if (isFirstInput.current) {
       isFirstInput.current = search === ''
-
       return
     }
 
@@ -40,19 +39,20 @@ function useSearch() {
 
 export default function App() {
   const { error, search, updateSearch } = useSearch()
-  const { movies, getMovies, loading } = useMovies({ search })
+  const { movies, getMovies, loading } = useMovies({ search }) //Cada vez que se actualiza el search, va a cambiar el parámetro del useMovies
 
   //const inputRef = useRef()
 
   //Utilizando vanilla JS, permite muuucha reutilización, como la posibilidad de usar 10 inputs
   const handleSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault() //Evita que la página se recargue
     //const { search } = Object.fromEntries(new window.FormData(event.target)) //De esta manera recolectamos 
     //const { search } = fields.get('search')
     getMovies()
   }
 
   //Esta función se encarga de manejar el estado del formulario cada vez que cambia el input
+  //Actualiza el estado search por medio del customHook useSearch cada vez que cambia el input
   const handleChange = (event) => {
     const newSearch = event.target.value
     if (newSearch !== ' ') {
