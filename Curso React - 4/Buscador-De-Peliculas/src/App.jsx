@@ -38,8 +38,9 @@ function useSearch() {
 }
 
 export default function App() {
+  const [sort, setSort] = useState(false) //Estado para ver indicar si se ordenan o no las películas
   const { error, search, updateSearch } = useSearch()
-  const { movies, getMovies, loading } = useMovies({ search }) //Cada vez que se actualiza el search, va a cambiar el parámetro del useMovies
+  const { movies, getMovies, loading } = useMovies({ search, sort }) //Cada vez que se actualiza el search, va a cambiar el parámetro del useMovies
 
   //const inputRef = useRef()
 
@@ -48,7 +49,7 @@ export default function App() {
     event.preventDefault() //Evita que la página se recargue
     //const { search } = Object.fromEntries(new window.FormData(event.target)) //De esta manera recolectamos 
     //const { search } = fields.get('search')
-    getMovies()
+    getMovies({ search })
   }
 
   //Esta función se encarga de manejar el estado del formulario cada vez que cambia el input
@@ -58,6 +59,10 @@ export default function App() {
     if (newSearch !== ' ') {
       updateSearch(event.target.value)
     }
+  }
+
+  const handleSort = () => {
+    setSort(!sort)
   }
 
   return (
@@ -74,6 +79,10 @@ export default function App() {
               name='search'
               placeholder='Pelicula a buscar...' /> {/* Por defecto es text ||| value={search} */}
             <button type='submit'>Buscar</button>
+            <div>
+              <label htmlFor="">Ordenar</label>
+              <input type='checkbox' onChange={handleSort} checked={sort} />
+            </div>
           </form>
           {error && <p className='error'>{error}</p>}
         </div>
