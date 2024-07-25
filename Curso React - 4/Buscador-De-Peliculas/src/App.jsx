@@ -4,6 +4,8 @@ import { useMovies } from './hooks/useMovies'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useRef } from 'react'
+import { useCallback } from 'react'
+import debounce from 'just-debounce-it'
 
 function useSearch() {
   const [search, updateSearch] = useState('')
@@ -42,6 +44,14 @@ export default function App() {
   const { error, search, updateSearch } = useSearch()
   const { movies, getMovies, loading } = useMovies({ search, sort }) //Cada vez que se actualiza el search, va a cambiar el parámetro del useMovies
 
+  const debouncedGetMovies = useCallback(
+    debounce(search => {
+      console.log("Rararararara")
+      getMovies({ search })
+    }, 300)
+    , []
+  )
+
   //const inputRef = useRef()
 
   //Utilizando vanilla JS, permite muuucha reutilización, como la posibilidad de usar 10 inputs
@@ -57,7 +67,9 @@ export default function App() {
   const handleChange = (event) => {
     const newSearch = event.target.value
     if (newSearch !== ' ') {
-      updateSearch(event.target.value)
+      updateSearch(newSearch)
+      //getMovies({ search: newSearch })
+      debouncedGetMovies(newSearch)
     }
   }
 
